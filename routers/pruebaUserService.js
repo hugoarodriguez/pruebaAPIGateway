@@ -1,5 +1,5 @@
 var express = require('express');
-var axios = require('axios');
+const jwt = require('jsonwebtoken');
 var router = express.Router();
 const apiAdapter = require('./apiAdapter');
 var config = require('../config');
@@ -34,11 +34,20 @@ router.post("/api/users/Login", (req , res) => {
         
         api.post(req.path, req.body).then(resp => {
 
-            var data = {
-                "IdUser" : resp.data
+            var user = {
+                IdUser : resp.data
             }
 
-            res.json(data);
+            if(user.IdUser > 0){
+                jwt.sign({user}, config.sk, {expiresIn: '32s'}, (err, token) => {
+                    res.json({
+                        "data": user,
+                        token
+                    });
+                });
+            } else{
+                res.json(user);
+            }
         });
         
     } catch (error) {
@@ -47,7 +56,7 @@ router.post("/api/users/Login", (req , res) => {
 });
 
 
-router.get('/api/users/GetUserByEmail', (req, res) => {
+router.get('/api/users/GetUserByEmail', isValidated, (req, res) => {
 
     try {
         api.get(req.path,{
