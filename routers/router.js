@@ -9,5 +9,6 @@ router.use((req, res, next) => {
 });
 
 router.use(pruebaUserService);
+router.use(accountOwnerService);
 
 module.exports = router;

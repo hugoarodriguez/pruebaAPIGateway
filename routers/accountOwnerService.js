@@ -4,7 +4,7 @@ const apiAdapter = require('./apiAdapter');
 var config = require('../config');
 //const isValidated = require('../requestValidator');
 
-const BASE_URL = 'http://localhost:24912/';
+const BASE_URL = 'http://localhost:5000/';//Dirección y puerto correspondientes al contenedor del kubernete
 const api = apiAdapter(BASE_URL);
 
 // Authorization: Bearer <token>
@@ -49,7 +49,15 @@ router.post("/api/login", (req , res) => {
 });
 
 
-router.get('/accountOwners/owner', isValidated, (req, res) => {
+router.get('/accountOwners/owner', (req, res) => {
+
+    api.get(req.path).then(resp => {
+        res.send(resp.data);
+    });
+
+});
+
+router.get('/weatherforecast', (req, res) => {
 
     api.get(req.path).then(resp => {
         res.send(resp.data);
