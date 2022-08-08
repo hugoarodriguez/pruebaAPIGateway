@@ -3,6 +3,7 @@ var router = express.Router();
 const apiAdapter = require('./apiAdapter');
 var config = require('../config');
 //const isValidated = require('../requestValidator');
+var nodemailer = require('nodemailer');
 
 const BASE_URL = 'http://localhost:5000/';//Dirección y puerto correspondientes al contenedor del kubernete
 const api = apiAdapter(BASE_URL);
@@ -48,11 +49,41 @@ router.post("/api/login", (req , res) => {
 
 });
 
+//Creamos el objeto de transporte
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'pasteleriamoresprueba@gmail.com',
+      pass: 'nwxm fckk dgfn vvgh'
+    }
+  });
+
+  var mensaje = "Hola desde NodeJS... Tu contraseña de es...";
+
+  var mailOptions = {
+    from: 'pasteleriamoresprueba@gmail.com',
+    to: 'hugorodriguez98@outlook.es',
+    subject: 'Asunto Del Correo',
+    text: mensaje
+  };
 
 router.get('/accountOwners/owner', (req, res) => {
-
+    
     api.get(req.path).then(resp => {
-        res.send(resp.data);
+        try {
+            res.send(resp.data);
+        } catch (error) {
+            console.log(error);
+        }
+    });
+
+    //Enviar correo
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+        console.log(error);
+        } else {
+        console.log('Email enviado: ' + info.response);
+        }
     });
 
 });
